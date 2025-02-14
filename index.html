@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Professional Logo Upload</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h2 {
+            color: #007bff;
+        }
+        .upload-box {
+            border: 2px dashed #007bff;
+            padding: 20px;
+            cursor: pointer;
+            background: #e9f5ff;
+            border-radius: 5px;
+        }
+        #preview-container {
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .preview {
+            margin: 10px;
+            max-width: 150px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 5px;
+            background: white;
+        }
+        .download-btn {
+            margin-top: 10px;
+            padding: 10px 15px;
+            background: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>Upload Your Logo</h2>
+        <label class="upload-box" id="dropArea">
+            Drag & Drop or Click to Upload Logo(s)
+            <input type="file" id="logoInput" accept="image/*" hidden multiple>
+        </label>
+        <div id="preview-container"></div>
+        <button id="downloadBtn" class="download-btn">Download All Logos</button>
+    </div>
+
+    <script>
+        const logoInput = document.getElementById('logoInput');
+        const previewContainer = document.getElementById('preview-container');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const dropArea = document.getElementById('dropArea');
+
+        dropArea.addEventListener('click', () => logoInput.click());
+        dropArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropArea.style.background = "#d6e9ff";
+        });
+        dropArea.addEventListener('dragleave', () => dropArea.style.background = "#e9f5ff");
+        dropArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropArea.style.background = "#e9f5ff";
+            handleFiles(e.dataTransfer.files);
+        });
+
+        logoInput.addEventListener('change', (e) => handleFiles(e.target.files));
+
+        function handleFiles(files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.className = 'preview';
+                    previewContainer.appendChild(img);
+                }
+                reader.readAsDataURL(file);
+            });
+            downloadBtn.style.display = 'block';
+        }
+
+        downloadBtn.addEventListener('click', () => {
+            const images = document.querySelectorAll('.preview');
+            images.forEach((img, index) => {
+                const link = document.createElement('a');
+                link.href = img.src;
+                link.download = `logo_${index + 1}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+        });
+    </script>
+</body>
+</html>
